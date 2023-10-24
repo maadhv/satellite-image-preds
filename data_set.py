@@ -19,7 +19,8 @@ def save_data(train: str,
   if transform == None:
     transform = transforms.Compose([
         transforms.Resize(64,64),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5],std=[0.5])
     ])
 
   train_set = datasets.ImageFolder(train,transform)
