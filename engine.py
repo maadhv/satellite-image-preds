@@ -5,7 +5,8 @@ import torch.nn as nn
 def train(model: nn.Module,
           data: torch.utils.data.DataLoader,
           loss: nn.Module,
-          optimizer: torch.optim.Optimizer):
+          optimizer: torch.optim.Optimizer,
+          device: torch.device):
 
   ''' training loop for a single epoch
 
@@ -23,6 +24,9 @@ def train(model: nn.Module,
   train_loss, train_accuracy = 0,0
 
   for batch , (x,y) in enumerate(data):
+    
+    x = x.to(device)
+    y = y.to(device)
 
     prds = model(x)
     lss = loss(prds,y)
@@ -40,7 +44,8 @@ def train(model: nn.Module,
 
 def test(model: nn.Module,
          data: torch.utils.data.DataLoader,
-         loss: nn.Module):
+         loss: nn.Module,
+         device = torch.device):
 
   ''' testing loop for a single epoch
 
@@ -57,6 +62,8 @@ def test(model: nn.Module,
   test_loss, test_accuracy = 0,0
 
   for batch, (x,y) in enumerate(data):
+    
+    x,y = x.to(device) , y.to(device)
 
     prds= model(x)
     lss = loss(prds,y)
@@ -75,7 +82,9 @@ def train_loop(model: nn.Module,
                train_data: torch.utils.data.DataLoader,
                test_data: torch.utils.data.DataLoader,
                loss_fn: nn.Module,
-               optimizer : torch.optim.Optimizer):
+               optimizer : torch.optim.Optimizer,
+               device: torch.device,
+               epochs: int):
 
   '''combines train and test function into final training loop
 
@@ -91,13 +100,13 @@ def train_loop(model: nn.Module,
 
   results = {'train loss':[],'train accu':[],'test loss':[],'test accu':[]}
 
-  for epoch in tqdm(range(10)):
+  for epoch in tqdm(range(epochs)):
 
     train_loss , train_accu = train(model= model, data = train_data,
-                                    loss= loss_fn, optimizer= optimizer)
+                                    loss= loss_fn, optimizer= optimizer, device= device)
 
     test_loss , test_accu = test(model= model, data= test_data,
-                                 loss = loss_fn)
+                                 loss = loss_fn,device = device)
 
     print(f"epoch: {epoch+1} | train loss: {train_loss} | test loss: {test_loss}")
 
